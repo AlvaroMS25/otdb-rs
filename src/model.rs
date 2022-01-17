@@ -44,7 +44,7 @@ pub struct ApiCountGlobalDetail {
     rejected_questions: u32
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum ResponseCode {
     Success = 0,
     NoResults = 1,
