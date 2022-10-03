@@ -54,7 +54,7 @@ pub(crate) async fn make_request<T>(req: reqwest::RequestBuilder) -> OTDBResult<
 pub mod prelude {
     pub use crate::{
         options::*,
-        endpoints::{OwnedRequest, Request},
+        request::{OwnedRequest, Request},
         client::*
     };
 }

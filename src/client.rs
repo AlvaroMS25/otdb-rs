@@ -54,7 +54,7 @@ impl Client {
             &self.client,
             &self.token,
             "https://opentdb.com/api_token.php?command=request"
-        ).await?.token)
+        ).send().await?.token)
     }
 
     pub fn trivia_request(&self) -> Request<BaseResponse<Vec<Trivia>>> {
@@ -65,11 +65,11 @@ impl Client {
         )
     }
 
-    pub fn new_request<T: DeserializeOwned + Unpin>(&self, ep: impl ToString) -> Request<T> {
-        Request::new(
+    pub fn new_request<T: DeserializeOwned>(&self, ep: impl ToString) -> OwnedRequest<T> {
+        OwnedRequest::new(
             &self.client,
             &self.token,
-            Box::leak(ep.to_string().into_boxed_str())
+            ep.to_string()
         )
     }
 
@@ -79,7 +79,7 @@ impl Client {
                 &self.client,
                 &self.token,
                 "https://opentdb.com/api_token.php?command=reset"
-            ).await?.token)
+            ).send().await?.token)
         } else {
             self.generate_token().await
         }

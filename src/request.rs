@@ -2,14 +2,16 @@ use crate::endpoints::EndPointOptions;
 use serde::de::DeserializeOwned;
 use reqwest::{Client, RequestBuilder};
 use std::fmt::{Debug, Formatter, Result as FmtResult};
+use std::ops::{Deref, DerefMut};
 use std::marker::PhantomData;
 use crate::options::*;
+use crate::OTDBResult;
 
-pub struct Request<'a, T: 'static + DeserializeOwned> {
+pub struct Request<'a, T> {
     client: &'a Client,
     token: &'a Option<String>,
     endpoint: &'static str,
-    pub options: EndPointOptions,
+    options: EndPointOptions,
     marker: PhantomData<T>
 }
 
@@ -37,11 +39,34 @@ impl<'a, T: DeserializeOwned> Request<'a, T> {
         }
     }
 
-    pub fn prepare(&mut self, mut request: RequestBuilder) -> RequestBuilder {
+    pub(crate) fn prepare(&mut self, mut request: RequestBuilder) -> RequestBuilder {
         if let Some(t) = self.token {
             request = request.query(&[("token", t)]);
         }
         self.options.prepare(request)
+    }
+
+    pub async fn send(mut self) -> OTDBResult<T> {
+        self.prepare(self.client.get(self.endpoint))
+            .send()
+            .await?
+            .json()
+            .await
+            .map_err(From::from)
+    }
+}
+
+impl<T> Deref for Request<'_, T> {
+    type Target = EndPointOptions;
+
+    fn deref(&self) -> &Self::Target {
+        &self.options
+    }
+}
+
+impl<T> DerefMut for Request<'_, T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.options
     }
 }
 
@@ -55,7 +80,7 @@ impl<T: DeserializeOwned> Debug for Request<'_, T> {
     }
 }
 
-pub struct OwnedRequest<T: 'static + DeserializeOwned> {
+pub struct OwnedRequest<T> {
     client: Client,
     token: Option<String>,
     endpoint: String,
@@ -66,10 +91,10 @@ pub struct OwnedRequest<T: 'static + DeserializeOwned> {
 unsafe impl<T: DeserializeOwned> Send for OwnedRequest<T> {}
 
 impl<T: DeserializeOwned> OwnedRequest<T> {
-    pub fn new(client: Client, token: Option<String>, endpoint: String) -> Self {
+    pub fn new(client: &Client, token: &Option<String>, endpoint: String) -> Self {
         let mut this = Self {
             client: client.clone(),
-            token,
+            token: token.clone(),
             endpoint,
             options: Default::default(),
             marker: PhantomData
@@ -86,16 +111,17 @@ impl<T: DeserializeOwned> OwnedRequest<T> {
         self.options.prepare(request)
     }
 
-    fn _prepare_future(&mut self) {
-        if self.future.is_none() {
-            let mut request = self.client.get(self.endpoint);
-            request = self.prepare(request);
-            self.future = Some(Box::pin(crate::make_request(request)));
-        }
+    pub async fn send(mut self) -> OTDBResult<T> {
+        self.prepare(self.client.get(&self.endpoint))
+            .send()
+            .await?
+            .json()
+            .await
+            .map_err(From::from)
     }
 }
 
-impl<T: DeserializeOwned> std::ops::Deref for OwnedRequest<T> {
+impl<T: DeserializeOwned> Deref for OwnedRequest<T> {
     type Target = EndPointOptions;
 
     fn deref(&self) -> &Self::Target {
@@ -103,7 +129,7 @@ impl<T: DeserializeOwned> std::ops::Deref for OwnedRequest<T> {
     }
 }
 
-impl<T: DeserializeOwned> std::ops::DerefMut for OwnedRequest<T> {
+impl<T: DeserializeOwned> DerefMut for OwnedRequest<T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.options
     }
