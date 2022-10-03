@@ -1,4 +1,4 @@
-use crate::{endpoints::Request, OTDBResult, model::*};
+use crate::{request::{Request, OwnedRequest}, OTDBResult, model::*};
 use reqwest::Client as HttpClient;
 use std::fmt::{Debug, Formatter, Result as FmtResult};
 use serde::de::DeserializeOwned;
@@ -50,7 +50,7 @@ impl Client {
     pub async fn generate_token(&self) -> OTDBResult<String> {
         use crate::model::TokenRequestResponse;
 
-        Ok(Request::<TokenRequestResponse>::default(
+        Ok(Request::<TokenRequestResponse>::new(
             &self.client,
             &self.token,
             "https://opentdb.com/api_token.php?command=request"
@@ -66,7 +66,7 @@ impl Client {
     }
 
     pub fn new_request<T: DeserializeOwned + Unpin>(&self, ep: impl ToString) -> Request<T> {
-        Request::default(
+        Request::new(
             &self.client,
             &self.token,
             Box::leak(ep.to_string().into_boxed_str())
@@ -75,7 +75,7 @@ impl Client {
 
     pub async fn reset_token(&self) -> OTDBResult<String> {
         if self.token.is_some() {
-            Ok(Request::<ResetToken>::default(
+            Ok(Request::<ResetToken>::new(
                 &self.client,
                 &self.token,
                 "https://opentdb.com/api_token.php?command=reset"

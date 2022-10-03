@@ -2,6 +2,9 @@ mod client;
 pub mod model;
 mod endpoints;
 mod options;
+mod request;
+
+#[cfg(test)]
 mod tests;
 
 #[derive(Debug)]
