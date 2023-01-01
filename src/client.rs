@@ -10,37 +10,14 @@ pub struct Client {
 }
 
 impl Client {
-    pub fn create_http_client() -> HttpClient {
-        HttpClient::builder()
-            .user_agent("Rust-OTDB-wrapper")
-            .build()
-            .expect("Failed to build client")
-    }
-
     pub fn new() -> Self {
         Self {
             token: Default::default(),
-            client: Self::create_http_client()
+            client: HttpClient::builder()
+                .user_agent("Rust-OTDB-wrapper")
+                .build()
+                .expect("Failed to build client")
         }
-    }
-
-    pub fn new_with_http(client: HttpClient) -> Self {
-        Self {
-            token: Default::default(),
-            client
-        }
-    }
-
-    pub fn new_with_token(token: impl ToString) -> Self {
-        let mut s = Self::new();
-        s.set_token(token);
-        s
-    }
-
-    pub fn new_with_http_and_token(client: HttpClient, token: impl ToString) -> Self {
-        let mut s = Self::new_with_http(client);
-        s.set_token(token);
-        s
     }
 
     pub fn set_token(&mut self, token: impl ToString) {
@@ -48,8 +25,6 @@ impl Client {
     }
 
     pub async fn generate_token(&self) -> OTDBResult<String> {
-        use crate::model::TokenRequestResponse;
-
         Ok(Request::<TokenRequestResponse>::new(
             &self.client,
             &self.token,
