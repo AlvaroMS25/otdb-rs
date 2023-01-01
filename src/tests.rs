@@ -14,7 +14,7 @@ async fn test() -> crate::OTDBResult<()> {
         .difficulty(Difficulty::Hard);
 
     println!("{:#?}", res);
-    let res = res.await?;
+    let res = res.send().await?;
 
     println!("{:#?}", res);
     Ok(())
@@ -26,7 +26,7 @@ async fn owned_request() -> crate::OTDBResult<()> {
     let request = client.trivia_request().into_owned();
 
     println!("{:#?}", request);
-    let res = request.await?;
+    let res = request.send().await?;
 
     println!("{:#?}", res);
 
@@ -36,11 +36,11 @@ async fn owned_request() -> crate::OTDBResult<()> {
 #[tokio::test]
 async fn custom_endpoint() -> crate::OTDBResult<()> {
     let mut client = Client::new();
-    let res: Request<crate::model::TokenRequestResponse> = client.new_request(String::from("https://opentdb.com/api_token.php?command=request"));
+    let res: OwnedRequest<crate::model::TokenRequestResponse> = client.new_request(String::from("https://opentdb.com/api_token.php?command=request"));
 
     println!("{:?}", res);
 
-    println!("{:#?}", res.await?);
+    println!("{:#?}", res.send().await?);
 
     Ok(())
 }
