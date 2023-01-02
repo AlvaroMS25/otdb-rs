@@ -1,4 +1,3 @@
-use crate::endpoints::EndPointOptions;
 use serde::de::DeserializeOwned;
 use reqwest::{Client, RequestBuilder};
 use std::fmt::{Debug, Formatter, Result as FmtResult};
@@ -10,17 +9,17 @@ use crate::OTDBResult;
 pub struct Request<'a, T> {
     client: &'a Client,
     token: &'a Option<String>,
-    endpoint: &'static str,
-    options: EndPointOptions,
+    endpoint: String,
+    options: Options,
     marker: PhantomData<T>
 }
 
 impl<'a, T: DeserializeOwned> Request<'a, T> {
-    pub fn new(client: &'a Client, token: &'a Option<String>, endpoint: &'static str) -> Self {
+    pub fn new(client: &'a Client, token: &'a Option<String>, endpoint: impl ToString) -> Self {
         let mut this = Self {
             client,
             token,
-            endpoint,
+            endpoint: endpoint.to_string(),
             options: Default::default(),
             marker: PhantomData
         };
@@ -33,7 +32,7 @@ impl<'a, T: DeserializeOwned> Request<'a, T> {
         OwnedRequest {
             client: self.client.clone(),
             token: self.token.clone(),
-            endpoint: self.endpoint.to_string(),
+            endpoint: self.endpoint,
             options: self.options,
             marker: PhantomData
         }
@@ -47,7 +46,7 @@ impl<'a, T: DeserializeOwned> Request<'a, T> {
     }
 
     pub async fn send(mut self) -> OTDBResult<T> {
-        self.prepare(self.client.get(self.endpoint))
+        self.prepare(self.client.get(&self.endpoint))
             .send()
             .await?
             .json()
@@ -57,7 +56,7 @@ impl<'a, T: DeserializeOwned> Request<'a, T> {
 }
 
 impl<T> Deref for Request<'_, T> {
-    type Target = EndPointOptions;
+    type Target = Options;
 
     fn deref(&self) -> &Self::Target {
         &self.options
@@ -84,7 +83,7 @@ pub struct OwnedRequest<T> {
     client: Client,
     token: Option<String>,
     endpoint: String,
-    options: EndPointOptions,
+    options: Options,
     marker: PhantomData<T>
 }
 
@@ -122,7 +121,7 @@ impl<T: DeserializeOwned> OwnedRequest<T> {
 }
 
 impl<T: DeserializeOwned> Deref for OwnedRequest<T> {
-    type Target = EndPointOptions;
+    type Target = Options;
 
     fn deref(&self) -> &Self::Target {
         &self.options

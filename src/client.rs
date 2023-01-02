@@ -1,7 +1,9 @@
-use crate::{request::{Request, OwnedRequest}, OTDBResult, model::*};
+use crate::{request::{Request, OwnedRequest}, model::*};
 use reqwest::Client as HttpClient;
 use std::fmt::{Debug, Formatter, Result as FmtResult};
 use serde::de::DeserializeOwned;
+use crate::error::OTDBResult;
+use crate::options::Category;
 
 #[derive(Clone)]
 pub struct Client {
@@ -25,7 +27,7 @@ impl Client {
     }
 
     pub async fn generate_token(&self) -> OTDBResult<String> {
-        Ok(Request::<TokenRequestResponse>::new(
+        Ok(Request::<TokenRequest>::new(
             &self.client,
             &self.token,
             "https://opentdb.com/api_token.php?command=request"
@@ -37,6 +39,22 @@ impl Client {
             &self.client,
             &self.token,
             "https://opentdb.com/api.php?encode=base64"
+        )
+    }
+
+    pub fn category_details(&self, category: Category) -> Request<CategoryDetails> {
+        Request::new(
+            &self.client,
+            &None,
+            format!("https://opentdb.com/api_count.php?category={}", category as u8)
+        )
+    }
+
+    pub fn global_details(&self) -> Request<GlobalDetails> {
+        Request::new(
+            &self.client,
+            &None,
+            "https://opentdb.com/api_count_global.php"
         )
     }
 
@@ -61,10 +79,16 @@ impl Client {
     }
 }
 
+impl Default for Client {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Debug for Client {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         f.debug_struct("Client")
-            .field("token", &self.token as &dyn Debug)
+            .field("token", &self.token)
             .finish()
     }
 }
