@@ -193,18 +193,16 @@ impl<'de> Deserialize<'de> for GlobalDetails {
                 while let Some(key) = map.next_key::<String>()? {
                     match key.as_str() {
                         "overall" => {
-                            println!("Parsing overall");
                             overall = Some(map.next_value::<GlobalDetail>()?);
                         },
                         "categories" => {
-                            println!("Parsing categories");
                             categories = Some(map.next_value::<CategoryMap>()?.0);
                         },
                         k => panic!("Unrecognized key {k}")
                     }
                 }
 
-
+                assert!(overall.is_some() && categories.is_some());
 
                 Ok(GlobalDetails {
                     overall: overall.unwrap(),
