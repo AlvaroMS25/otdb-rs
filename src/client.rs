@@ -58,11 +58,11 @@ impl Client {
         )
     }
 
-    pub fn new_request<T: DeserializeOwned>(&self, ep: impl ToString) -> OwnedRequest<T> {
-        OwnedRequest::new(
+    pub fn new_request<T: DeserializeOwned>(&self, ep: impl ToString) -> Request<T> {
+        Request::new(
             &self.client,
             &self.token,
-            ep.to_string()
+            ep
         )
     }
 
