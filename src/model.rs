@@ -1,7 +1,6 @@
 use serde::{Deserialize, Deserializer};
 use std::collections::HashMap;
 use std::fmt::Formatter;
-use std::mem::MaybeUninit;
 use serde::de::{MapAccess, Visitor};
 use crate::options::{Category, Difficulty, Kind};
 
@@ -36,6 +35,7 @@ pub struct GlobalDetails {
     pub categories: HashMap<Category, GlobalDetail>
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 pub struct GlobalDetail {
     #[serde(rename = "total_num_of_questions")]

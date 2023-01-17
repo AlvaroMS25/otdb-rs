@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 #[tokio::test]
-async fn get_trivia() -> crate::OTDBResult<()> {
+async fn get_trivia() -> OTDBResult<()> {
     let client = Client::new();
 
     //client.set_token(client.generate_token().await?);
@@ -21,7 +21,7 @@ async fn get_trivia() -> crate::OTDBResult<()> {
 }
 
 #[tokio::test]
-async fn owned_request() -> crate::OTDBResult<()> {
+async fn owned_request() -> OTDBResult<()> {
     let client = Client::new();
     let request = client.trivia_request().into_owned();
 
@@ -34,9 +34,9 @@ async fn owned_request() -> crate::OTDBResult<()> {
 }
 
 #[tokio::test]
-async fn custom_endpoint() -> crate::OTDBResult<()> {
+async fn custom_endpoint() -> OTDBResult<()> {
     let client = Client::new();
-    let res: OwnedRequest<crate::model::TokenRequest> = client.new_request(String::from("https://opentdb.com/api_token.php?command=request"));
+    let res: Request<crate::model::TokenRequest> = client.new_request(String::from("https://opentdb.com/api_token.php?command=request"));
 
     println!("{:?}", res);
 
@@ -46,7 +46,7 @@ async fn custom_endpoint() -> crate::OTDBResult<()> {
 }
 
 #[tokio::test]
-async fn category_details() -> crate::OTDBResult<()> {
+async fn category_details() -> OTDBResult<()> {
     let client = Client::new();
     let res = client.category_details(Category::Computers).send().await?;
 
@@ -56,7 +56,7 @@ async fn category_details() -> crate::OTDBResult<()> {
 }
 
 #[tokio::test]
-async fn global_details() -> crate::OTDBResult<()> {
+async fn global_details() -> OTDBResult<()> {
     let client = Client::new();
     let res = client.global_details().send().await?;
 

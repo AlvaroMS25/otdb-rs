@@ -1,4 +1,4 @@
-use crate::{request::{Request, OwnedRequest}, model::*};
+use crate::{request::{Request}, model::*};
 use reqwest::Client as HttpClient;
 use std::fmt::{Debug, Formatter, Result as FmtResult};
 use serde::de::DeserializeOwned;

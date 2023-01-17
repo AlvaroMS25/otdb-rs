@@ -3,8 +3,8 @@ use reqwest::{Client, RequestBuilder};
 use std::fmt::{Debug, Formatter, Result as FmtResult};
 use std::ops::{Deref, DerefMut};
 use std::marker::PhantomData;
+use crate::error::{HttpError, OTDBResult};
 use crate::options::*;
-use crate::OTDBResult;
 
 pub struct Request<'a, T> {
     client: &'a Client,
@@ -46,12 +46,19 @@ impl<'a, T: DeserializeOwned> Request<'a, T> {
     }
 
     pub async fn send(mut self) -> OTDBResult<T> {
-        self.prepare(self.client.get(&self.endpoint))
-            .send()
-            .await?
-            .json()
-            .await
-            .map_err(From::from)
+        Self::make_request(self.prepare(self.client.get(&self.endpoint))).await
+    }
+
+    async fn make_request(req: RequestBuilder) -> OTDBResult<T>
+    where
+    {
+        let response = req.send().await?;
+
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            c if c >= 500 => Err(HttpError::InternalServerError(response.text().await?)),
+            _ => Err(HttpError::UnsuccessfulRequest(response.status(), response.text().await?)),
+        }
     }
 }
 
@@ -111,12 +118,7 @@ impl<T: DeserializeOwned> OwnedRequest<T> {
     }
 
     pub async fn send(mut self) -> OTDBResult<T> {
-        self.prepare(self.client.get(&self.endpoint))
-            .send()
-            .await?
-            .json()
-            .await
-            .map_err(From::from)
+        Request::make_request(self.prepare(self.client.get(&self.endpoint))).await
     }
 }
 
