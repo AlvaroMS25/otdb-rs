@@ -10,8 +10,6 @@ pub mod blocking;
 #[cfg(test)]
 mod tests;
 
-//https://opentdb.com/api_config.php
-
 pub mod prelude {
     pub use crate::{
         options::*,
