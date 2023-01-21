@@ -16,7 +16,7 @@ impl Client {
         Self {
             token: Default::default(),
             client: HttpClient::builder()
-                .user_agent("Rust-OTDB-wrapper")
+                .user_agent("Otdb-rs")
                 .build()
                 .expect("Failed to build client")
         }

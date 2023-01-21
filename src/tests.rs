@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::blocking;
 
 #[tokio::test]
 async fn get_trivia() -> OTDBResult<()> {
@@ -61,6 +62,75 @@ async fn global_details() -> OTDBResult<()> {
     let res = client.global_details().send().await?;
 
     println!("{:?}", res);
+
+    Ok(())
+}
+
+#[test]
+fn blocking_trivia() -> OTDBResult<()> {
+    let client = blocking::Client::new();
+    let mut req = client.trivia_request();
+    req.kind(Kind::Any)
+        .category(Category::Computers);
+
+    println!("{:?}", req.send()?);
+
+
+    Ok(())
+}
+
+#[test]
+fn blocking_trivia_owned() -> OTDBResult<()> {
+    let client = blocking::Client::new();
+    let mut req = client.trivia_request().into_owned();
+    req.kind(Kind::Any)
+        .category(Category::Computers);
+
+    println!("{:?}", req.send()?);
+
+
+    Ok(())
+}
+
+#[test]
+fn blocking_multiple_threads() -> OTDBResult<()> {
+    let client = blocking::Client::new();
+    let mut handles = Vec::with_capacity(8);
+
+    for _ in 0..8 {
+        let clone = client.clone();
+        handles.push(std::thread::spawn(move || {
+            clone.trivia_request().send()
+        }));
+    }
+
+    for i in handles {
+        i.join().unwrap().unwrap();
+    }
+
+    Ok(())
+}
+
+#[test]
+fn blocking_use_token() -> OTDBResult<()> {
+    let mut client = blocking::Client::new();
+    client.set_token(client.generate_token()?);
+
+    Ok(())
+}
+
+#[test]
+fn blocking_category_details() -> OTDBResult<()> {
+    let client = blocking::Client::new();
+    println!("{:?}", client.category_details(Category::BoardGames).send()?);
+
+    Ok(())
+}
+
+#[test]
+fn blocking_global_details() -> OTDBResult<()> {
+    let client = blocking::Client::new();
+    println!("{:?}", client.global_details().send()?);
 
     Ok(())
 }
