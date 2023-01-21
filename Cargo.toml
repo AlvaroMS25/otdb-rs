@@ -11,7 +11,7 @@ blocking = []
 [dependencies]
 tokio = { version = "1", features = ["rt", "sync", "rt-multi-thread"] }
 serde = { version = "1", features = ["derive"] }
-base64 = "0.20.0"
+base64 = "0.21.0"
 reqwest = { version = "0.11", features = ["json"] }
 tracing = "0.1"
 tracing-futures = "0.2"

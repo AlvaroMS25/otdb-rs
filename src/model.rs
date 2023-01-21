@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::fmt::Formatter;
 use serde::de::{MapAccess, Visitor};
 use crate::options::{Category, Difficulty, Kind};
+use base64::engine::Engine;
 
 #[derive(Debug, Deserialize)]
 pub struct TokenRequest {
@@ -106,7 +107,7 @@ pub(crate) fn base64_string<'de, D>(deserializer: D) -> Result<String, D::Error>
 where
     D: Deserializer<'de>
 {
-    let bytes = base64::decode(String::deserialize(deserializer)?)
+    let bytes = base64::engine::general_purpose::STANDARD.decode(String::deserialize(deserializer)?)
         .map_err(serde::de::Error::custom)?;
 
     String::from_utf8(bytes)
@@ -120,7 +121,7 @@ where
     let v: Vec<String> = serde::de::Deserialize::deserialize(deserializer)?;
 
     let decoded = v.into_iter()
-        .map(base64::decode)
+        .map(|item| base64::engine::general_purpose::STANDARD.decode(item))
         .collect::<Result<Vec<_>, _>>()
         .map_err(serde::de::Error::custom)?
         .into_iter()
