@@ -6,7 +6,7 @@ use crate::options::{Category, Difficulty, Kind};
 use base64::engine::Engine;
 
 #[derive(Debug, Deserialize)]
-pub struct TokenRequest {
+pub(crate) struct TokenRequest {
     pub token: String
 }
 
@@ -80,7 +80,7 @@ pub struct Trivia {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct ResetToken {
+pub(crate) struct ResetToken {
     pub token: String
 }
 
