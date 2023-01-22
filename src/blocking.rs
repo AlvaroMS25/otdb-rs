@@ -110,8 +110,8 @@ impl Client {
         self.block(self.inner.global_details())
     }
 
-    pub fn new_request<T: DeserializeOwned>(&self, ep: impl ToString) -> Request<T> {
-        self.block(self.inner.new_request(ep))
+    pub fn new_request<T: DeserializeOwned>(&self, endpoint: impl ToString) -> Request<T> {
+        self.block(self.inner.new_request(endpoint))
     }
 
     pub fn reset_token(&self) -> OTDBResult<String> {
