@@ -62,8 +62,7 @@ pub enum ResponseCode {
 pub struct BaseResponse<T> {
     #[serde(deserialize_with = "deserialize_response_code")]
     pub response_code: ResponseCode,
-    #[serde(rename = "results")]
-    pub response: T
+    pub results: T
 }
 
 #[derive(Debug, Deserialize)]
