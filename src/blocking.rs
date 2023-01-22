@@ -98,8 +98,8 @@ impl Client {
         self.rt.block_on(self.inner.generate_token())
     }
 
-    pub fn trivia_request(&self) -> Request<BaseResponse<Vec<Trivia>>> {
-        self.block(self.inner.trivia_request())
+    pub fn trivia(&self) -> Request<BaseResponse<Vec<Trivia>>> {
+        self.block(self.inner.trivia())
     }
 
     pub fn category_details(&self, category: Category) -> Request<CategoryDetails> {

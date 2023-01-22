@@ -34,7 +34,7 @@ impl Client {
         ).send().await?.token)
     }
 
-    pub fn trivia_request(&self) -> Request<BaseResponse<Vec<Trivia>>> {
+    pub fn trivia(&self) -> Request<BaseResponse<Vec<Trivia>>> {
         Request::new(
             &self.client,
             &self.token,

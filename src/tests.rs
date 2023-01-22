@@ -7,7 +7,7 @@ async fn get_trivia() -> OTDBResult<()> {
 
     //client.set_token(client.generate_token().await?);
 
-    let mut res = client.trivia_request();
+    let mut res = client.trivia();
     res
         .question_number(50)
         .kind(Kind::Any)
@@ -24,7 +24,7 @@ async fn get_trivia() -> OTDBResult<()> {
 #[tokio::test]
 async fn owned_request() -> OTDBResult<()> {
     let client = Client::new();
-    let request = client.trivia_request().into_owned();
+    let request = client.trivia().into_owned();
 
     println!("{:#?}", request);
     let res = request.send().await?;
@@ -69,7 +69,7 @@ async fn global_details() -> OTDBResult<()> {
 #[test]
 fn blocking_trivia() -> OTDBResult<()> {
     let client = blocking::Client::new();
-    let mut req = client.trivia_request();
+    let mut req = client.trivia();
     req.kind(Kind::Any)
         .category(Category::Computers);
 
@@ -82,7 +82,7 @@ fn blocking_trivia() -> OTDBResult<()> {
 #[test]
 fn blocking_trivia_owned() -> OTDBResult<()> {
     let client = blocking::Client::new();
-    let mut req = client.trivia_request().into_owned();
+    let mut req = client.trivia().into_owned();
     req.kind(Kind::Any)
         .category(Category::Computers);
 
@@ -100,7 +100,7 @@ fn blocking_multiple_threads() -> OTDBResult<()> {
     for _ in 0..8 {
         let clone = client.clone();
         handles.push(std::thread::spawn(move || {
-            clone.trivia_request().send()
+            clone.trivia().send()
         }));
     }
 
