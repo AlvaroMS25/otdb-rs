@@ -2,7 +2,7 @@ use crate::prelude::*;
 use crate::blocking;
 
 #[tokio::test]
-async fn get_trivia() -> OTDBResult<()> {
+async fn get_trivia() -> Result<()> {
     let client = Client::new();
 
     //client.set_token(client.generate_token().await?);
@@ -22,7 +22,7 @@ async fn get_trivia() -> OTDBResult<()> {
 }
 
 #[tokio::test]
-async fn owned_request() -> OTDBResult<()> {
+async fn owned_request() -> Result<()> {
     let client = Client::new();
     let request = client.trivia().into_owned();
 
@@ -35,7 +35,7 @@ async fn owned_request() -> OTDBResult<()> {
 }
 
 #[tokio::test]
-async fn custom_endpoint() -> OTDBResult<()> {
+async fn custom_endpoint() -> Result<()> {
     let client = Client::new();
     let res: Request<crate::model::TokenRequest> = client.new_request(String::from("https://opentdb.com/api_token.php?command=request"));
 
@@ -47,7 +47,7 @@ async fn custom_endpoint() -> OTDBResult<()> {
 }
 
 #[tokio::test]
-async fn category_details() -> OTDBResult<()> {
+async fn category_details() -> Result<()> {
     let client = Client::new();
     let res = client.category_details(Category::Computers).send().await?;
 
@@ -57,7 +57,7 @@ async fn category_details() -> OTDBResult<()> {
 }
 
 #[tokio::test]
-async fn global_details() -> OTDBResult<()> {
+async fn global_details() -> Result<()> {
     let client = Client::new();
     let res = client.global_details().send().await?;
 
@@ -67,7 +67,7 @@ async fn global_details() -> OTDBResult<()> {
 }
 
 #[test]
-fn blocking_trivia() -> OTDBResult<()> {
+fn blocking_trivia() -> Result<()> {
     let client = blocking::Client::new();
     let mut req = client.trivia();
     req.kind(Kind::Any)
@@ -80,7 +80,7 @@ fn blocking_trivia() -> OTDBResult<()> {
 }
 
 #[test]
-fn blocking_trivia_owned() -> OTDBResult<()> {
+fn blocking_trivia_owned() -> Result<()> {
     let client = blocking::Client::new();
     let mut req = client.trivia().into_owned();
     req.kind(Kind::Any)
@@ -93,7 +93,7 @@ fn blocking_trivia_owned() -> OTDBResult<()> {
 }
 
 #[test]
-fn blocking_multiple_threads() -> OTDBResult<()> {
+fn blocking_multiple_threads() -> Result<()> {
     let client = blocking::Client::new();
     let mut handles = Vec::with_capacity(8);
 
@@ -112,7 +112,7 @@ fn blocking_multiple_threads() -> OTDBResult<()> {
 }
 
 #[test]
-fn blocking_use_token() -> OTDBResult<()> {
+fn blocking_use_token() -> Result<()> {
     let mut client = blocking::Client::new();
     client.set_token(client.generate_token()?);
 
@@ -120,7 +120,7 @@ fn blocking_use_token() -> OTDBResult<()> {
 }
 
 #[test]
-fn blocking_category_details() -> OTDBResult<()> {
+fn blocking_category_details() -> Result<()> {
     let client = blocking::Client::new();
     println!("{:?}", client.category_details(Category::BoardGames).send()?);
 
@@ -128,7 +128,7 @@ fn blocking_category_details() -> OTDBResult<()> {
 }
 
 #[test]
-fn blocking_global_details() -> OTDBResult<()> {
+fn blocking_global_details() -> Result<()> {
     let client = blocking::Client::new();
     println!("{:?}", client.global_details().send()?);
 

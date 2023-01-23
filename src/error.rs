@@ -1,3 +1,4 @@
+/// The errors that can happen when making a request.
 #[derive(Debug)]
 pub enum HttpError {
     Request(reqwest::Error),
@@ -6,7 +7,8 @@ pub enum HttpError {
     InvalidOption(String)
 }
 
-pub type OTDBResult<T> = std::result::Result<T, HttpError>;
+/// An alias to `Result<T, HttpError>`
+pub type Result<T> = std::result::Result<T, HttpError>;
 
 impl From<reqwest::Error> for HttpError {
     fn from(e: reqwest::Error) -> Self {
