@@ -10,11 +10,10 @@ pub mod blocking;
 #[cfg(test)]
 mod tests;
 
-pub mod prelude {
-    pub use crate::{
-        options::*,
-        request::{OwnedRequest, Request},
-        client::*,
-        error::*
-    };
-}
+pub use crate::{
+    client::*,
+    error::HttpError,
+    model::*,
+    options::*,
+    request::*,
+};
