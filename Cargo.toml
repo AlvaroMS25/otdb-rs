@@ -1,9 +1,17 @@
 [package]
 name = "otdb"
-version = "0.1.0"
+version = "1.0.0"
+authors = ["Alvaro <62391364+AlvaroMS25@users.noreply.github.com>"]
 edition = "2021"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/AlvaroMS25/otdb-rs"
+categories = ["asynchronous", "api-bindings"]
+keywords = ["otdb", "open-trivia-database", "trivia"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
 
 [features]
 blocking = []
@@ -17,4 +25,4 @@ tracing = "0.1"
 tracing-futures = "0.2"
 
 [dev-dependencies]
-tokio = { version = "1", features = ["macros"] }
+tokio = { version = "1", features = ["full"] }
